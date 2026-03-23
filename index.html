@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Sinpe Quick v1.1</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js" 
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"
     onerror="window._jsQRFailed=true;console.warn('jsQR CDN failed')"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"
+    onerror="window._tesseractFailed=true;console.warn('Tesseract CDN failed')"></script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{
@@ -341,13 +343,7 @@
         <button class="btn btn-primary" onclick="saveProfile()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg><span id="saveProfileBtn">Guardar perfil</span></button>
       </div>
       <p id="bankHint" style="font-size:12px;color:var(--muted);line-height:1.6;padding:0 4px">Tu banco determina el número al que se envía el SMS. Se guarda solo una vez en este dispositivo.</p>
-      <div style="margin-top:12px">
-        <button class="btn btn-outline" onclick="promptForAPIKey()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-          <span id="apiKeyBtn">Configurar API Key (OCR)</span>
-        </button>
-        <p id="apiKeyHint" style="font-size:11px;color:var(--muted);line-height:1.5;padding:6px 4px 0">Necesaria solo para leer letreros con la cámara. Se guarda en este dispositivo.</p>
-      </div>
+      <!-- OCR powered by Tesseract.js — no API key needed -->
     </div>
   </div>
 
@@ -517,12 +513,12 @@ const T = {
     toastPhone8:     '⚠️ El número debe tener 8 dígitos',
     toastSelectBank: '⚠️ Selecciona tu banco',
     toastWADetected: '✅ QR de WhatsApp detectado',
+    toastWAQRNoPhone:'⚠️ Este QR de WhatsApp no contiene el número — agrega el contacto manualmente',
     toastSQDetected: '✅ QR de Sinpe Quick detectado',
     toastQRUnknown:  '⚠️ No se reconoció este QR',
     toastNoCam:      '⚠️ No se pudo acceder a la cámara',
     toastNoPhone:    '⚠️ No se encontró número en la imagen',
     toastOCRError:   '⚠️ Error OCR: ',
-    toastNoAPIKey:   '⚠️ Agrega tu API key en el código',
     toastSaved:      '💾 Contacto guardado',
     toastSetup:      '👋 Configura tu perfil en Ajustes',
     deleteConfirm:   '¿Eliminar este contacto?',
@@ -542,8 +538,6 @@ const T = {
     myQRTitle:       'Mi código QR',
     myQRSub:         'Muéstrale esto a quien te quiera enviar Sinpe',
     myQRClose:       'Cerrar',
-    apiKeyBtn:       'Configurar API Key (OCR)',
-    apiKeyHint:      'Necesaria solo para leer letreros con la cámara. Se guarda en este dispositivo.',
     langEs: '🇨🇷 Español', langEn: '🇺🇸 English', langFr: '🇫🇷 Français',
   },
   en: {
@@ -612,12 +606,12 @@ const T = {
     toastPhone8:     '⚠️ Number must be 8 digits',
     toastSelectBank: '⚠️ Select your bank',
     toastWADetected: '✅ WhatsApp QR detected',
+    toastWAQRNoPhone:'⚠️ This WhatsApp QR doesn\'t contain the number — add contact manually',
     toastSQDetected: '✅ Sinpe Quick QR detected',
     toastQRUnknown:  '⚠️ QR not recognized',
     toastNoCam:      '⚠️ Could not access camera',
     toastNoPhone:    '⚠️ No phone number found in image',
     toastOCRError:   '⚠️ OCR error: ',
-    toastNoAPIKey:   '⚠️ Add your API key to the code',
     toastSaved:      '💾 Contact saved',
     toastSetup:      '👋 Set up your profile in Settings',
     deleteConfirm:   'Delete this contact?',
@@ -637,8 +631,6 @@ const T = {
     myQRTitle:       'My QR Code',
     myQRSub:         'Show this to anyone who wants to send you Sinpe',
     myQRClose:       'Close',
-    apiKeyBtn:       'Set API Key (OCR)',
-    apiKeyHint:      'Only needed for reading signs with the camera. Stored on this device.',
     langEs: '🇨🇷 Español', langEn: '🇺🇸 English', langFr: '🇫🇷 Français',
   },
   fr: {
@@ -707,12 +699,12 @@ const T = {
     toastPhone8:     '⚠️ Le numéro doit avoir 8 chiffres',
     toastSelectBank: '⚠️ Sélectionnez votre banque',
     toastWADetected: '✅ QR WhatsApp détecté',
+    toastWAQRNoPhone:'⚠️ Ce QR WhatsApp ne contient pas le numéro — ajoutez le contact manuellement',
     toastSQDetected: '✅ QR Sinpe Quick détecté',
     toastQRUnknown:  '⚠️ QR non reconnu',
     toastNoCam:      '⚠️ Impossible d\'accéder à la caméra',
     toastNoPhone:    '⚠️ Aucun numéro trouvé dans l\'image',
     toastOCRError:   '⚠️ Erreur OCR: ',
-    toastNoAPIKey:   '⚠️ Ajoutez votre clé API dans le code',
     toastSaved:      '💾 Contact enregistré',
     toastSetup:      '👋 Configurez votre profil dans Paramètres',
     deleteConfirm:   'Supprimer ce contact?',
@@ -732,8 +724,6 @@ const T = {
     myQRTitle:       'Mon code QR',
     myQRSub:         'Montrez ceci à quelqu\'un qui veut vous envoyer Sinpe',
     myQRClose:       'Fermer',
-    apiKeyBtn:       'Configurer la clé API (OCR)',
-    apiKeyHint:      'Nécessaire uniquement pour lire des affiches avec la caméra. Stockée sur cet appareil.',
     langEs: '🇨🇷 Español', langEn: '🇺🇸 English', langFr: '🇫🇷 Français',
   }
 };
@@ -776,8 +766,7 @@ function applyLang(lang) {
   // Stage 3 scan tab cards
   const ids3 = ['waqrTitle','waqrSub','waqrScanBtn','waqrNote',
                  'sinpeqrTitle','sinpeqrSub','sinpeqrScanBtn','sinpeqrNote',
-                 'myQRBtn','myQRTitle','myQRSub','myQRClose',
-                 'apiKeyBtn','apiKeyHint'];
+                 'myQRBtn','myQRTitle','myQRSub','myQRClose'];
   ids3.forEach(id => { const el=document.getElementById(id); if(el) el.textContent=t(id); });
 
   // Bank selector placeholder & other option
@@ -814,31 +803,6 @@ function applyLang(lang) {
 function previewLang(lang) {
   // Live preview as user changes dropdown (before saving)
   applyLang(lang);
-}
-
-// ═══════════════════════════════════
-//  API KEY — stored in localStorage, never in code
-// ═══════════════════════════════════
-const API_KEY_STORAGE = 'sinpequick_apikey';
-
-function getAPIKey() {
-  return localStorage.getItem(API_KEY_STORAGE) || '';
-}
-
-function promptForAPIKey() {
-  const existing = getAPIKey();
-  const key = prompt(
-    'Ingresa tu Anthropic API key para usar OCR.\n(Solo se guarda en este dispositivo, nunca se envía a ningún servidor excepto api.anthropic.com)\n\nActual: ' + (existing ? '***...'+existing.slice(-4) : 'ninguna'),
-    existing || ''
-  );
-  if (key && key.trim().startsWith('sk-')) {
-    localStorage.setItem(API_KEY_STORAGE, key.trim());
-    showToast('✅ API key guardada');
-    return key.trim();
-  } else if (key !== null) {
-    showToast('⚠️ API key inválida — debe comenzar con sk-');
-  }
-  return existing;
 }
 
 // ═══════════════════════════════════
@@ -1127,7 +1091,13 @@ function handleQR(data){
     return;
   }
 
-  // WhatsApp QR: https://wa.me/PHONENUMBER
+  // WhatsApp "My QR Code" — uses wa.me/qr/CODE, doesn't contain the phone number
+  if(data.match(/wa\.me\/qr\//i)){
+    showToast(t('toastWAQRNoPhone'));
+    return;
+  }
+
+  // WhatsApp QR with phone number: https://wa.me/506XXXXXXXX
   const wa=data.match(/wa\.me\/(\d+)/i);
   if(wa){
     let ph=wa[1];
@@ -1148,26 +1118,21 @@ async function captureOCR(){
   const v=document.getElementById('cameraVideo');
   if(!v.videoWidth){ showToast(t('toastNoCam')); return; }
 
-  // Check for API key — prompt if missing
-  let apiKey = getAPIKey();
-  if(!apiKey){
-    closeCamera();
-    apiKey = promptForAPIKey();
-    if(!apiKey) return;
-    openCamera(); return; // reopen camera after key entry
+  if(window._tesseractFailed){
+    showToast(t('toastOCRError')+'Tesseract not loaded');
+    return;
   }
 
   const c=document.getElementById('qrCanvas');
   c.width=v.videoWidth; c.height=v.videoHeight;
   c.getContext('2d').drawImage(v,0,0,c.width,c.height);
-  const b64=c.toDataURL('image/jpeg',0.85).split(',')[1];
 
   const btn=document.getElementById('captureBtn');
   btn.innerHTML='<div class="spinner"></div>'; btn.disabled=true;
   document.getElementById('camStatus').textContent=t('camStatusReading');
 
   try {
-    const result=await callVision(b64, apiKey);
+    const result=await runOCR(c);
     closeCamera();
     if(result && result.phone){
       openPayment(result.name||'',result.phone);
@@ -1176,44 +1141,48 @@ async function captureOCR(){
     }
   } catch(e) {
     closeCamera();
-    if(e.message && e.message.includes('401')){
-      localStorage.removeItem(API_KEY_STORAGE);
-      showToast('⚠️ API key inválida — ingresa una nueva en OCR');
-    } else {
-      showToast(t('toastOCRError')+(e.message||''));
-    }
+    showToast(t('toastOCRError')+(e.message||''));
   }
   btn.innerHTML='<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M20 12a8 8 0 1 1-16 0 8 8 0 0 1 16 0z" stroke-dasharray="3 3"/></svg>';
   btn.disabled=false;
 }
 
-async function callVision(b64, apiKey){
-  const res=await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'x-api-key':apiKey,
-      'anthropic-version':'2023-06-01',
-      'anthropic-dangerous-direct-browser-ipc':'true'
-    },
-    body:JSON.stringify({
-      model:'claude-sonnet-4-20250514',
-      max_tokens:200,
-      messages:[{role:'user',content:[
-        {type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},
-        {type:'text',text:`Analiza esta imagen. Extrae el número de teléfono celular de Costa Rica (8 dígitos, empieza con 6,7,8 o 9) y si hay nombre de persona o negocio relacionado con Sinpe o pago.
-Responde SOLO en JSON sin texto extra:
-{"phone":"XXXXXXXX","name":"Nombre o vacío"}
-Si no hay número: {"phone":"","name":""}
-Sin guiones ni espacios en el número.`}
-      ]}]
-    })
+async function runOCR(canvas){
+  // Use Tesseract.js — runs entirely in the browser, no API key needed
+  const worker = await Tesseract.createWorker('spa+eng', 1, {
+    workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/worker.min.js',
+    corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5/tesseract-core-simd-lstm.wasm.js',
   });
-  if(!res.ok){ const e=await res.json().catch(()=>({})); throw new Error(e?.error?.message||res.status); }
-  const data=await res.json();
-  const txt=(data.content?.[0]?.text||'').trim();
-  try{ return JSON.parse(txt.replace(/```json|```/g,'').trim()); }
-  catch{ const m=txt.match(/\b[2-9]\d{7}\b/); return m?{phone:m[0],name:''}:null; }
+  const { data } = await worker.recognize(canvas);
+  await worker.terminate();
+
+  const txt = data.text || '';
+  // Extract 8-digit Costa Rica phone number (starts with 2-9)
+  // Try with separators first: 8800-1234, 8800 1234, then bare digits
+  const cleaned = txt.replace(/[^\d\s\-\.]/g,' ');
+  // Look for 8 consecutive digits
+  const bare = txt.replace(/\D/g,' ');
+  const m = bare.match(/\b([2-9]\d{3}\s?\d{4})\b/) || txt.match(/[2-9]\d{3}[\s\-\.]?\d{4}/);
+  if(m){
+    const phone = m[1] ? m[1].replace(/\D/g,'') : m[0].replace(/\D/g,'');
+    if(phone.length===8){
+      // Try to find a name: look for capitalized words near the number
+      const lines = txt.split(/\n/);
+      let name = '';
+      for(const line of lines){
+        // Skip lines that are mostly numbers
+        if(line.replace(/\d/g,'').trim().length < 3) continue;
+        // Look for capitalized words (likely a name or business)
+        const words = line.trim().match(/[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)*/);
+        if(words && words[0].length > 2){
+          name = words[0];
+          break;
+        }
+      }
+      return { phone, name };
+    }
+  }
+  return null;
 }
 
 // ═══════════════════════════════════
